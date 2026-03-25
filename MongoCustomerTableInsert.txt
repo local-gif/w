@@ -1,0 +1,19 @@
+const { MongoClient } = require("mongodb");
+const url = "mongodb://127.0.0.1:27017";
+const client = new MongoClient(url);
+async function run() {
+await client.connect();
+const db = client.db("shop");
+const col = db.collection("customers");
+await col.insertMany([
+{ name: "Amit", city: "Pune" },
+{ name: "Rahul", city: "Mumbai" },
+{ name: "Neha", city: "Delhi" },
+{ name: "Sneha", city: "Nagpur" },
+{ name: "Kiran", city: "Nashik" }
+]);
+const result = await col.find({}).toArray();
+console.log(result);
+client.close();
+}
+run();

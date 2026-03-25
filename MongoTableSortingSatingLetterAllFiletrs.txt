@@ -1,0 +1,148 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+
+mongoose.connect("mongodb://192.168.100.50:27017/fymsc36")
+  .then(() => console.log("MongoDB Connected to fymsc36"))
+  .catch(err => console.log(err));
+
+// Schema
+const employeeSchema = new mongoose.Schema({
+  name: String,
+  position: String,
+  salary: Number,
+  age: Number
+});
+
+const Employee = mongoose.model("Employee", employeeSchema);
+
+// Insert 20 records only once
+async function insertData() {
+  const count = await Employee.countDocuments();
+  if (count === 0) {
+    await Employee.insertMany([
+      { name: "Amit", position: "Manager", salary: 60000, age: 35 },
+      { name: "Rohit", position: "Developer", salary: 50000, age: 28 },
+      { name: "Sneha", position: "Tester", salary: 40000, age: 26 },
+      { name: "Priya", position: "HR", salary: 45000, age: 30 },
+      { name: "Kunal", position: "Designer", salary: 42000, age: 27 },
+      { name: "Rahul", position: "Developer", salary: 52000, age: 29 },
+      { name: "Neha", position: "Manager", salary: 65000, age: 36 },
+      { name: "Vikas", position: "Support", salary: 35000, age: 24 },
+      { name: "Anita", position: "HR", salary: 47000, age: 31 },
+      { name: "Suresh", position: "Admin", salary: 38000, age: 33 },
+      { name: "Pooja", position: "Developer", salary: 54000, age: 28 },
+      { name: "Arjun", position: "Designer", salary: 43000, age: 26 },
+      { name: "Meena", position: "Tester", salary: 41000, age: 27 },
+      { name: "Nitin", position: "Support", salary: 36000, age: 25 },
+      { name: "Sunita", position: "Manager", salary: 62000, age: 34 },
+      { name: "Rakesh", position: "Admin", salary: 39000, age: 32 },
+      { name: "Kavita", position: "HR", salary: 46000, age: 29 },
+      { name: "Deepak", position: "Developer", salary: 56000, age: 30 },
+      { name: "Manoj", position: "Support", salary: 34000, age: 23 },
+      { name: "Shilpa", position: "Designer", salary: 44000, age: 28 }
+    ]);
+    console.log("20 records inserted");
+  }
+}
+insertData();
+
+// Display, Filter & Sort
+app.get("/", async (req, res) => {
+
+  const { field, order, name, agegroup, designation } = req.query;
+
+  let sortObj = {};
+  let filterObj = {};
+
+  // Name starts with
+  if (name) {
+    filterObj.name = { $regex: "^" + name, $options: "i" };
+  }
+
+  // Age groups
+  if (agegroup === "young") {
+    filterObj.age = { $lt: 30 };
+  }
+  if (agegroup === "old") {
+    filterObj.age = { $gte: 30 };
+  }
+
+  // Designation level
+  if (designation === "higher") {
+    filterObj.position = "Manager";
+  }
+  if (designation === "lower") {
+    filterObj.position = { $ne: "Manager" };
+  }
+
+  // Sorting
+  if (field && order) {
+    sortObj[field] = order === "asc" ? 1 : -1;
+  }
+
+  const data = await Employee.find(filterObj).sort(sortObj);
+
+  let rows = data.map(e => `
+    <tr>
+      <td>${e.name}</td>
+      <td>${e.position}</td>
+      <td>${e.salary}</td>
+      <td>${e.age}</td>
+    </tr>
+  `).join("");
+
+  res.send(`
+    <h2 align="center">Employee Table</h2>
+
+    <form align="center" method="GET">
+
+      Name starts with:
+      <input type="text" name="name">
+
+      <br><br>
+      Age Group:
+      <input type="radio" name="agegroup" value="young">Young
+      <input type="radio" name="agegroup" value="old">Old
+
+      <br><br>
+      Designation:
+      <input type="radio" name="designation" value="higher">Higher
+      <input type="radio" name="designation" value="lower">Lower
+
+      <br><br>
+      Sort By:
+      <input type="radio" name="field" value="name">Name
+      <input type="radio" name="field" value="salary">Salary
+      <input type="radio" name="field" value="age">Age
+
+      <br><br>
+      Order:
+      <input type="radio" name="order" value="asc">Ascending
+      <input type="radio" name="order" value="desc">Descending
+
+      <br><br>
+      <button type="submit">Apply</button>
+    </form>
+
+    <br>
+
+    <table border="1" align="center" cellpadding="5">
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Salary</th>
+        <th>Age</th>
+      </tr>
+      ${rows}
+    </table>
+  `);
+});
+
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
+

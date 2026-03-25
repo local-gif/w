@@ -1,0 +1,133 @@
+1. Design Django application to display “Hello, Welcome to School of Computer 
+Science at NWC” using template
+Answer →
+
+views.py
+from django.shortcuts import render
+def home(request):
+return render(request, "home.html")
+
+templates/home.html
+<h2>Hello, Welcome to School of Computer Science at NWC</h2>
+-------------------------------------------------------------
+2. Design a Django application that adds web pages with views and templates
+Answer →
+
+views.py
+from django.shortcuts import render
+def page1(request):
+return render(request, "page1.html")
+def page2(request):
+return render(request, "page2.html")
+templates/page1.html
+<h2>This is Page One</h2>
+
+templates/page2.html
+<h2>This is Page Two</h2>
+--------------------------------------------------------------
+3. Implement URL mapping and page redirection using Django with at least two pages
+Answer →
+
+urls.py
+from django.urls import path
+from . import views
+urlpatterns = [
+path("", views.first),
+path("second/", views.second),
+]
+
+views.py
+from django.shortcuts import redirect, render
+def first(request):
+    return redirect("second")
+def second(request):
+    return render(request, "second.html")
+
+templates/second.html
+<h2>Second Page</h2>
+-------------------------------------------------------------
+4. Create a login application using Django with validation and error handling
+Answer →
+
+views.py
+from django.shortcuts import render
+def login(request):
+    if request.method == "POST":
+        u = request.POST["username"]
+        p = request.POST["password"]
+        if u == "admin" and p == "admin123":
+            return render(request, "success.html")
+        else:
+            return render(request, "login.html", {"error": "Invalid Credentials"})
+    return render(request, "login.html")
+
+templates/login.html
+<form method="post">
+{% csrf_token %}
+<input name="username" placeholder="Username">
+<input type="password" name="password" placeholder="Password">
+<button>Login</button>
+<p>{{ error }}</p>
+</form>
+
+templates/success.html
+<h2>Login Successful</h2>
+------------------------------------------------------------
+Extra Practice Questions
+1. Design Django form to accept student details with validation
+Answer →
+forms.py
+
+from django import forms
+class StudentForm(forms.Form):
+    fname = forms.CharField()
+    lname = forms.CharField()
+    student_class = 
+forms.ChoiceField(choices=[("FY","FY"),("SY","SY"),("TY","TY")])
+    email = forms.EmailField()
+    mobno = forms.RegexField(regex=r'^\d{10}$')
+    address = forms.CharField(widget=forms.Textarea)
+    resume = forms.FileField()
+
+views.py
+
+from django.shortcuts import render
+from .forms import StudentForm
+def student(request):
+    if request.method == "POST":
+        form = StudentForm(request.POST, request.FILES)
+        if form.is_valid():
+            return render(request, "display.html", {"data": form.cleaned_data})
+    else:
+        form = StudentForm()
+    return render(request, "form.html", {"form": form})
+templates/form.html
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{{ form }}
+<button>Submit</button>
+</form>
+
+templates/display.html
+
+<h3>Student Details</h3>
+{{ data }}
+-----------------------------------------------------------
+2. Create Django application with HomePage and AboutUs pages
+Answer →
+
+views.py
+from django.http import HttpResponse
+def home(request):
+return HttpResponse("Welcome to Nowrosjee Wadia College, Pune")
+def about_us(request):
+return HttpResponse("An Autonomous College under Savitribai Phule Pune 
+University")
+
+urls.py
+from django.urls import path
+from . import views
+urlpatterns = [
+path("", views.home),
+path("about/", views.about_us),
+]

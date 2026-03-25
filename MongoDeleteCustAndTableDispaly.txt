@@ -1,0 +1,28 @@
+const { MongoClient } = require("mongodb");
+
+const url = "mongodb://127.0.0.1:27017";
+const client = new MongoClient(url);
+const dbName = "shop";
+
+async function run() {
+  try {
+    await client.connect();
+
+    const db = client.db(dbName);
+    const collection = db.collection("customers");
+
+    const before = await collection.find({}).toArray();
+    console.table(before);
+
+    await collection.deleteOne({ name: "Rahul" });
+
+    const after = await collection.find({}).toArray();
+    console.table(after);
+
+    client.close();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+run();

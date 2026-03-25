@@ -1,0 +1,76 @@
+📁 File Structure
+recipe-app/
+│── server.js
+│── package.json
+│── views/
+│     ├── home.ejs
+│     └── details.ejs
+
+
+📄 server.js
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+
+let recipes = [];
+
+app.get('/', (req, res) => {
+    res.render('home', { recipes });
+});
+
+app.post('/add', (req, res) => {
+    const { name, description } = req.body;
+    recipes.push({ id: Date.now(), name, description });
+    res.redirect('/');
+});
+
+app.get('/recipe/:id', (req, res) => {
+    const recipe = recipes.find(r => r.id == req.params.id);
+    res.render('details', { recipe });
+});
+
+app.get('/delete/:id', (req, res) => {
+    recipes = recipes.filter(r => r.id != req.params.id);
+    res.redirect('/');
+});
+
+app.listen(3000, () => console.log("Server running"));
+
+
+
+📄 views/home.ejs
+
+<h2>Add Recipe</h2>
+<form action="/add" method="POST">
+    Name: <input name="name"><br>
+    Description: <input name="description"><br>
+    <button>Add</button>
+</form>
+
+<h2>Recipes</h2>
+<ul>
+<% recipes.forEach(r => { %>
+    <li>
+        <%= r.name %> 
+        <a href="/recipe/<%= r.id %>">View</a>
+        <a href="/delete/<%= r.id %>">Delete</a>
+    </li>
+<% }) %>
+</ul>
+
+📄 views/details.ejs
+
+<h2>Recipe Details</h2>
+<p>Name: <%= recipe.name %></p>
+<p>Description: <%= recipe.description %></p>
+<a href="/">Back</a>
+
+
+▶ Run Commands
+npm init -y
+npm install express body-parser ejs
+node server.js

@@ -1,0 +1,40 @@
+const http = require('http');
+const url = require('url');
+
+function area(r) {
+    return Math.PI * r * r;
+}
+
+function circumference(r) {
+    return 2 * Math.PI * r;
+}
+
+http.createServer((req, res) => {
+
+    if (req.url.startsWith('/calc')) {
+        const q = url.parse(req.url, true).query;
+        const r = parseFloat(q.radius);
+
+        if (isNaN(r) || r <= 0) {
+            res.end("Invalid radius");
+            return;
+        }
+
+        res.end(`
+            Area: ${area(r)} <br>
+            Circumference: ${circumference(r)}
+        `);
+
+    } else {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(`
+            <form action="/calc">
+                Radius: <input name="radius">
+                <button type="submit">Calculate</button>
+            </form>
+        `);
+    }
+
+}).listen(3000);
+
+console.log("Server running at http://localhost:3000");

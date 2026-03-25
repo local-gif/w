@@ -1,0 +1,41 @@
+📁 File Structure
+download-app/
+│── server.js
+│── package.json
+│── public/
+│     └── index.html
+│── files/
+│     └── sample.txt
+
+📄 server.js
+const express = require('express');
+const path = require('path');
+
+const app = express();
+
+app.use(express.static('public'));
+
+app.get('/download', (req, res) => {
+    const filePath = path.join(__dirname, 'files', 'sample.txt');
+
+    res.download(filePath, 'sample.txt', (err) => {
+        if (err) {
+            res.send("File not found");
+        }
+    });
+});
+
+app.listen(3000, () => console.log("Server running"));
+
+
+📄 public/index.html
+<h2>Download File</h2>
+<a href="/download">
+    <button>Download</button>
+</a>
+
+
+▶ Run Commands
+npm init -y
+npm install express
+node server.js

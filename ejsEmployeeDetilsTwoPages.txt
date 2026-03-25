@@ -1,0 +1,47 @@
+📁 File Structure
+employee-app/
+│── server.js
+│── package.json
+│── views/
+│     ├── form.ejs
+│     └── display.ejs
+
+
+📄 server.js
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+    res.render('form');
+});
+
+app.post('/submit', (req, res) => {
+    const { name, salary } = req.body;
+    res.render('display', { name, salary });
+});
+
+app.listen(3000, () => console.log("Server running"));
+
+
+📄 views/form.ejs
+<form action="/submit" method="POST">
+    Name: <input name="name"><br>
+    Salary: <input name="salary"><br>
+    <button>Submit</button>
+</form>
+
+
+📄 views/display.ejs
+<h2>Employee Details</h2>
+<p>Name: <%= name %></p>
+<p>Salary: <%= salary %></p>
+
+
+▶ Run Commands
+npm init -y
+npm install express body-parser ejs
+node server.js

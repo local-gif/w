@@ -1,0 +1,39 @@
+const { MongoClient } = require("mongodb");
+
+const url = "mongodb://localhost:27017";
+const client = new MongoClient(url);
+const dbName = "college";
+
+async function insertStudents() {
+  try {
+    await client.connect();
+    console.log("Connected");
+
+    const db = client.db(dbName);
+    const collection = db.collection("student");
+
+    const before = await collection.find({}).toArray();
+    console.log("Before Insert");
+    console.table(before);
+
+    const students = [
+      { name: "om", marks: 91 },
+      { name: "ravi", marks: 32 },
+      { name: "kaustub", marks: 0 }
+    ];
+
+    const result = await collection.insertMany(students);
+    console.log("Inserted:", result.insertedCount);
+
+    const after = await collection.find({}).toArray();
+    console.log("After Insert");
+    console.table(after);
+
+  } catch (err) {
+    console.log("Error:", err);
+  } finally {
+    await client.close();
+  }
+}
+
+insertStudents();

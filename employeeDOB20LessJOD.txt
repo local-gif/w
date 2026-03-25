@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        form {
+            max-width: 400px;
+        }
+        input, button {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h2>Employee Details Form</h2>
+    <form id="employeeForm">
+        <label>Name:</label>
+        <input type="text" id="name" required>
+        <span class="error" id="nameError"></span>
+
+        <label>Phone:</label>
+        <input type="text" id="phone" placeholder="e.g. 1234567890" required>
+        <span class="error" id="phoneError"></span>
+
+        <label>Date of Birth:</label>
+        <input type="date" id="dob" required>
+        <span class="error" id="dobError"></span>
+
+        <label>Joining Date:</label>
+        <input type="date" id="joiningDate" required>
+        <span class="error" id="joiningDateError"></span>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h3>Employee Records</h3>
+    <table id="employeeTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>DOB</th>
+                <th>Joining Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('employeeForm');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const dobInput = document.getElementById('dob');
+        const joiningDateInput = document.getElementById('joiningDate');
+
+        const nameError = document.getElementById('nameError');
+        const phoneError = document.getElementById('phoneError');
+        const dobError = document.getElementById('dobError');
+        const joiningDateError = document.getElementById('joiningDateError');
+
+        const employeeTableBody = document.getElementById('employeeTable').querySelector('tbody');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            nameError.textContent = '';
+            phoneError.textContent = '';
+            dobError.textContent = '';
+            joiningDateError.textContent = '';
+
+            let isValid = true;
+
+            
+            if (nameInput.value.trim() === '') {
+                nameError.textContent = 'Name is required';
+                isValid = false;
+            }
+
+            
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phoneInput.value.trim())) {
+                phoneError.textContent = 'Phone must be 10 digits';
+                isValid = false;
+            }
+
+         
+            const dobValue = dobInput.value;
+            if (!dobValue) {
+                dobError.textContent = 'Date of Birth is required';
+                isValid = false;
+            }
+
+            
+            const joiningValue = joiningDateInput.value;
+            if (!joiningValue) {
+                joiningDateError.textContent = 'Joining Date is required';
+                isValid = false;
+            }
+
+            if (dobValue && joiningValue) {
+                const dob = new Date(dobValue);
+                const joining = new Date(joiningValue);
+
+               
+                const minJoiningDate = new Date(dob);
+                minJoiningDate.setFullYear(minJoiningDate.getFullYear() + 20);
+
+                if (joining < minJoiningDate) {
+                    joiningDateError.textContent = 'Joining Date must be at least 20 years after DOB';
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+              
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${nameInput.value.trim()}</td>
+                    <td>${phoneInput.value.trim()}</td>
+                    <td>${dobInput.value}</td>
+                    <td>${joiningDateInput.value}</td>
+                `;
+                employeeTableBody.appendChild(row);
+
+           
+                form.reset();
+            }
+        });
+    </script>
+</body>
+</html>
+

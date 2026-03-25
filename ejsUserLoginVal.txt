@@ -1,0 +1,52 @@
+login-app/
+│── server.js
+│── package.json
+│── views/
+│     ├── login.ejs
+│     └── result.ejs
+
+
+📄 server.js
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+    res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (username.length > 6) {
+        res.send("Username should not be more than 6 characters");
+        return;
+    }
+
+    res.render('result', { username, password });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
+
+
+📄 views/login.ejs
+<form action="/login" method="POST">
+    Username: <input type="text" name="username"><br><br>
+    Password: <input type="password" name="password"><br><br>
+    <button type="submit">Login</button>
+</form>
+
+
+📄 views/result.ejs
+<h2>Login Successful</h2>
+<p>Username: <%= username %></p>
+<p>Password: <%= password %></p>
+
+
+▶ Run Commands
+npm init -y
+npm install express body-parser ejs
+node server.js

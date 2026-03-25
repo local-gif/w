@@ -1,0 +1,43 @@
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+
+http.createServer((req, res) => {
+
+    if (req.url.startsWith('/process')) {
+        const query = url.parse(req.url, true).query;
+        const file1 = query.file1;
+        const file2 = query.file2;
+
+        fs.readFile(file1, 'utf8', (err, data) => {
+            if (err) {
+                res.end("Error reading first file");
+                return;
+            }
+
+            fs.appendFile(file2, data, (err) => {
+                if (err) {
+                    res.end("Error appending");
+                    return;
+                }
+
+                fs.unlink(file1, () => {
+                    res.end("Success: Content appended & file deleted");
+                });
+            });
+        });
+
+    } else {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(`
+            <form action="/process">
+                File 1: <input name="file1"><br><br>
+                File 2: <input name="file2"><br><br>
+                <button type="submit">Submit</button>
+            </form>
+        `);
+    }
+
+}).listen(3000);
+
+console.log("Server running at http://localhost:3000");

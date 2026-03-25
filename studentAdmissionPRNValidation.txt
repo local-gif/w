@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admission Form</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
+  .card {
+    margin-top: 50px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <!-- Admission Form Card -->
+      <div class="card shadow">
+        <div class="card-header text-center bg-primary text-white">
+          <h4>Admission Form</h4>
+        </div>
+
+        <div class="card-body">
+          <form id="admissionForm">
+
+            <!-- PRN -->
+            <div class="mb-3">
+              <label class="form-label">PRN</label>
+              <input type="text" id="prn" class="form-control">
+              <div class="text-danger" id="prnError"></div>
+            </div>
+
+            <!-- Name -->
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" id="name" class="form-control">
+              <div class="text-danger" id="nameError"></div>
+            </div>
+
+            <!-- Class -->
+            <div class="mb-3">
+              <label class="form-label">Class</label>
+              <input type="text" id="class" class="form-control">
+              <div class="text-danger" id="classError"></div>
+            </div>
+
+            <!-- Qualification -->
+            <div class="mb-3">
+              <label class="form-label">Previous Qualification</label>
+              <input type="text" id="qualification" class="form-control">
+              <div class="text-danger" id="qualificationError"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              Submit
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card mt-4 d-none" id="resultCard">
+        <div class="card-header bg-success text-white">
+          Admission Details
+        </div>
+        <div class="card-body">
+          <p><strong>PRN:</strong> <span id="rPrn"></span></p>
+          <p><strong>Name:</strong> <span id="rName"></span></p>
+          <p><strong>Class:</strong> <span id="rClass"></span></p>
+          <p><strong>Previous Qualification:</strong> <span id="rQualification"></span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const prnInput = document.getElementById("prn");
+const nameInput = document.getElementById("name");
+const classInput = document.getElementById("class");
+const qualificationInput = document.getElementById("qualification");
+
+const prnError = document.getElementById("prnError");
+const nameError = document.getElementById("nameError");
+const classError = document.getElementById("classError");
+const qualificationError = document.getElementById("qualificationError");
+
+// PRN → only numbers (keyup)
+prnInput.addEventListener("keyup", () => {
+  prnInput.value = prnInput.value.replace(/\D/g, "");
+  prnError.innerText = prnInput.value ? "" : "PRN is required";
+});
+
+// Name → convert to uppercase (keyup)
+nameInput.addEventListener("keyup", () => {
+  nameInput.value = nameInput.value.toUpperCase();
+  nameError.innerText = nameInput.value ? "" : "Name is required";
+});
+
+// Class validation
+classInput.addEventListener("keyup", () => {
+  classError.innerText = classInput.value ? "" : "Class is required";
+});
+
+// Qualification validation
+qualificationInput.addEventListener("keyup", () => {
+  qualificationError.innerText = qualificationInput.value ? "" : "Previous qualification is required";
+});
+
+// Form submit
+document.getElementById("admissionForm").addEventListener("submit", (e) => {
+
+  if (!prnInput.value) prnError.innerText = "PRN is required";
+  if (!nameInput.value) nameError.innerText = "Name is required";
+  if (!classInput.value) classError.innerText = "Class is required";
+  if (!qualificationInput.value) qualificationError.innerText = "Previous qualification is required";
+
+  if (prnError.innerText || nameError.innerText || classError.innerText || qualificationError.innerText) {
+    e.preventDefault();
+    alert("Please fix errors before submitting");
+    return;
+  }
+
+  e.preventDefault();
+
+  document.getElementById("rPrn").innerText = prnInput.value;
+  document.getElementById("rName").innerText = nameInput.value;
+  document.getElementById("rClass").innerText = classInput.value;
+  document.getElementById("rQualification").innerText = qualificationInput.value;
+
+  document.getElementById("resultCard").classList.remove("d-none");
+});
+</script>
+
+</body>
+</html>
+
